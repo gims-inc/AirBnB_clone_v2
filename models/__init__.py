@@ -1,5 +1,10 @@
 #!/usr/bin/python3
+<<<<<<< HEAD
 """This module instantiates an instance of the Storage will be used"""
+=======
+"""This module instantiates an object of class FileStorage"""
+#from models.engine.file_storage import FileStorage
+>>>>>>> b86e50d7eaeeeea67cdddb5b4389503932330be7
 
 from os import getenv
 
