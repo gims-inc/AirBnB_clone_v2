@@ -22,10 +22,10 @@ def hbnb():
 def c_is_fun(text):
     return 'C %s' % text.replace("_", " ")
 
-@app.route('/python/', strict_slashes=False)
+@app.route('/python', strict_slashes=False)
 @app.route('/python/<string:text>', strict_slashes=False)
 def python_is_cool(text="is cool"):
-    return 'Python %s' % text.replace("_", " ")}
+    return 'Python %s' % text.replace("_", " ")
 
 
 if __name__ == "__main__":
