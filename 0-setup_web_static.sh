@@ -1,37 +1,24 @@
 #!/usr/bin/env bash
-# preps simple nginx servers for static deployment of `web-static`
-service nginx status
-if (( $? != 0 )); then
-    sudo apt-get -y update
-    sudo apt-get -y install nginx
-    find /var/www/html/index.html
-    if (( $? != 0 )); then
-        sudo mkdir -p /var/www/html/
-        echo 'Holberton School' > /var/www/html/index.html
-    fi
-    service nginx restart
-fi
+# Set up server file system for deployment
 
+# install nginx
+sudo apt-get -y update
+sudo apt-get -y install nginx
+sudo service nginx start
+
+# configure file system
 sudo mkdir -p /data/web_static/shared/
-find /data/web_static/releases/test/index.html
-if (( $? != 0 )); then
-    sudo mkdir -p /data/web_static/releases/test/
-    echo "<html>
-  <head>
-  </head>
-  <body>
-    Holberton School
-  </body>
-</html>" > /data/web_static/releases/test/index.html
-    sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
-fi
+sudo mkdir -p /data/web_static/releases/test/
+sudo echo "<html><head></head><body>Holberton School<body></html>" | sudo tee /data/web_static/releases/test/index.html > /dev/null
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
+# set permissions
 sudo chown -R ubuntu:ubuntu /data/
-
-sudo grep -q "location \/hbnb_static\/ {$" /etc/nginx/sites-available/default
-if (( $? != 0 )); then
-    sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bup
-    sudo sed -i "0,/^\tlocation \/ {$/s/^\tlocation \/ {$/\tlocation \/hbnb_static\/ {\n\t\talias \/data\/web_static\/current\/;\n\t\tautoindex off;\n\t}\n\n\tlocation \/ {/" /etc/nginx/sites-available/default
-    sudo nginx -t 
-    sudo service nginx reload
-fi
+#create a copy of current default before modifying
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default_copy
+# configure nginx
+sudo sed -i '44i \\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/default
+# Test config
+sudo nginx -t
+# restart web server
+sudo service nginx restart
